@@ -48,3 +48,32 @@
   args:
     chdir: "{{ build_dir }}"
     creates: "{{ build_dir }}/heimdall_init"
+
+- name: download genesis_file
+  get_url:
+    url: "{{ heimdall_genesis_file }}"
+    dest: "{{ build_dir }}/heimdall/genesis.json"
+
+- name: copy heimdall genesis config
+  copy:
+    src: "{{ build_dir }}/heimdall/genesis.json"
+    dest: "{{ heimdall_data_dir }}/config/genesis.json"
+    remote_src: yes
+
+- name: update cors_allowed_origins
+  lineinfile:
+    path: "{{ heimdall_data_dir }}/config/config.toml"
+    regexp: '^cors_allowed_origins*'
+    line: 'cors_allowed_origins = ["*"]'
+
+- name: update seeds
+  lineinfile:
+    path: "{{ heimdall_data_dir }}/config/config.toml"
+    regexp: '^seeds =.*'
+    line: 'seeds = "{{ heimdall_seeds }}"'
+
+- name: update amqp_url
+  lineinfile:
+    path: "{{ heimdall_data_dir }}/config/heimdall-config.toml"
+    regexp: '^amqp_url =.*'
+    line: 'amqp_url = "{{ heimdall_amqp_url }}"'
