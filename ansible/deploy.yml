@@ -1,0 +1,7 @@
+---
+- name: Deploy matic mainnet full node
+  hosts:
+    - all
+  become: true
+  tasks:
+    - include: docker-install.yml
