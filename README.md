@@ -7,7 +7,20 @@ Polygon is a protocol and a framework for building and connecting Ethereum-compa
 
 # Required
 
+SPECS
+
+Minimum system requirements are as follows:
+
+16 GiB of memory
+
+4 core CPU (t2 xLarge)
+
+Minimum 150GB disk (make sure it is extendable)
+
+OS
+
 - account with sudo access to perform tasks as root
+
 
 # Usage
 
