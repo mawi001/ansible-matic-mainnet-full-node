@@ -4,10 +4,17 @@
     - matic
   become: true
   vars:
-    workdir: /data/git
+    work_dir: /data/git
+    build_dir: /data/build
     heimdall_version: v0.2.1-mainnet
-    heimdall_data_dir: "{{ workdir }}/vol/heimdall"
+    heimdall_data_dir: "{{ work_dir }}/vol/heimdall"
   tasks:
     - include: pre.yml
+      tags:
+        - pre
     - include: docker-install.yml
+      tags:
+        - docker
     - include: heimdall.yml
+      tags:
+        - heimdall
