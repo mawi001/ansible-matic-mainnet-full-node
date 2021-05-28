@@ -1,7 +1,13 @@
 ---
 - name: Deploy matic mainnet full node
   hosts:
-    - all
+    - matic
   become: true
+  vars:
+    workdir: /data/git
+    heimdall_version: v0.2.1-mainnet
+    heimdall_data_dir: "{{ workdir }}/vol/heimdall"
   tasks:
+    - include: pre.yml
     - include: docker-install.yml
+    - include: heimdall.yml

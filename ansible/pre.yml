@@ -1,0 +1,14 @@
+---
+- name: install prerequisites
+  apt:
+    name:
+      - git
+      - python3-pip
+      - sshpass
+    update_cache: yes
+
+- name: install pip packages
+  pip:
+    name:
+      - ansible
+      - docker-compose
