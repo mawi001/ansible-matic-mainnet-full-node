@@ -25,7 +25,7 @@
     remote_src: yes
 
   # fatal: [localhost]: FAILED! => {"changed": true, "cmd": "docker run -it -v /tmp/ansible.uyslw9x3build/heimdall:/root/.heimdalld heimdall:latest heimdalld init && touch heimdall_init\n", "delta": "0:00:00.311992", "end": "2021-05-28 21:39:49.536497", "msg": "non-zero return code", "rc": 125, "start": "2021-05-28 21:39:49.224505", "stderr": "docker: Error response from daemon: OCI runtime create failed: invalid mount {Destination:logs Type:bind Source:/var/lib/docker/volumes/114f8b6160dd4d51a0c9f24bb231e6e89788876693eb5d21895e546eca6f3c20/_data Options:[rbind]}: mount destination logs not absolute: unknown.\ntime=\"2021-05-28T21:39:49Z\" level=error msg=\"error waiting for container: context canceled\"", "stderr_lines": ["docker: Error response from daemon: OCI runtime create failed: invalid mount {Destination:logs Type:bind Source:/var/lib/docker/volumes/114f8b6160dd4d51a0c9f24bb231e6e89788876693eb5d21895e546eca6f3c20/_data Options:[rbind]}: mount destination logs not absolute: unknown.", "time=\"2021-05-28T21:39:49Z\" level=error msg=\"error waiting for container: context canceled\""], "stdout": "", "stdout_lines": []}
-- name: fix volume statement to avoid error
+- name: fix volume statement to avoid error on logs vol
   lineinfile:
     path: "{{ work_dir }}/heimdall/Dockerfile"
     regexp: '^VOLUME*'
