@@ -6,7 +6,14 @@ Vagrant.configure("2") do |config|
     v.cpus = 2
   end
 
+  config.vm.define "host1"
+
+  config.vm.synced_folder "/mnt/data", "/data"
+
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "ansible/deploy.yml"
+    ansible.groups = {
+      "matic" => ["host1"],
+    }
   end
 end
