@@ -1,0 +1,50 @@
+---
+- name: create workdir
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ work_dir }}"
+    - "{{ build_dir }}"
+
+- name: create heimdall datadir
+  file:
+    path: "{{ heimdall_data_dir }}"
+    state: directory
+
+- name: checkout heimdall
+  git:
+    repo: https://github.com/maticnetwork/heimdall.git
+    dest: "{{ work_dir }}/heimdall"
+    version: "{{ heimdall_version }}"
+
+- name: copy Dockerfile to project root
+  copy:
+    src: "{{ work_dir }}/heimdall/docker/Dockerfile"
+    dest: "{{ work_dir }}/heimdall"
+    remote_src: yes
+
+  # fatal: [localhost]: FAILED! => {"changed": true, "cmd": "docker run -it -v /tmp/ansible.uyslw9x3build/heimdall:/root/.heimdalld heimdall:latest heimdalld init && touch heimdall_init\n", "delta": "0:00:00.311992", "end": "2021-05-28 21:39:49.536497", "msg": "non-zero return code", "rc": 125, "start": "2021-05-28 21:39:49.224505", "stderr": "docker: Error response from daemon: OCI runtime create failed: invalid mount {Destination:logs Type:bind Source:/var/lib/docker/volumes/114f8b6160dd4d51a0c9f24bb231e6e89788876693eb5d21895e546eca6f3c20/_data Options:[rbind]}: mount destination logs not absolute: unknown.\ntime=\"2021-05-28T21:39:49Z\" level=error msg=\"error waiting for container: context canceled\"", "stderr_lines": ["docker: Error response from daemon: OCI runtime create failed: invalid mount {Destination:logs Type:bind Source:/var/lib/docker/volumes/114f8b6160dd4d51a0c9f24bb231e6e89788876693eb5d21895e546eca6f3c20/_data Options:[rbind]}: mount destination logs not absolute: unknown.", "time=\"2021-05-28T21:39:49Z\" level=error msg=\"error waiting for container: context canceled\""], "stdout": "", "stdout_lines": []}
+- name: fix volume statement to avoid error
+  lineinfile:
+    path: "{{ work_dir }}/heimdall/Dockerfile"
+    regexp: '^VOLUME*'
+    line: 'VOLUME [ "/root/.heimdalld" ]'
+
+- name: build docker image
+  shell: docker build --tag heimdall:latest .
+  args:
+    chdir: "{{ work_dir }}/heimdall"
+  register: docker_build_heimdall
+
+- debug: var=docker_build_heimdall
+
+- name: init heimdall
+  shell: >
+    docker run -it -v {{ heimdall_data_dir }}/heimdall:/root/.heimdalld
+    heimdall:latest
+    heimdalld init
+    > heimdall_init
+  args:
+    chdir: "{{ build_dir }}"
+    creates: "{{ build_dir }}/heimdall_init"

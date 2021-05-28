@@ -7,7 +7,8 @@
     work_dir: /data/git
     build_dir: /data/build
     heimdall_version: v0.2.1-mainnet
-    heimdall_data_dir: "{{ work_dir }}/vol/heimdall"
+    heimdall_data_dir: "/data/vol/heimdall"
+    heimdall_genesis_file: https://raw.githubusercontent.com/maticnetwork/launch/master/mainnet-v1/without-sentry/heimdall/config/genesis.json
   tasks:
     - include: pre.yml
       tags:
