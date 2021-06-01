@@ -1,0 +1,48 @@
+---
+- name: create docker-compose for heimdall
+  template:
+    src: templates/docker-compose-heimdall.j2
+    dest: "{{ build_dir }}/heimdall/docker-compose.yml"
+  tags:
+    - docker
+    - heimdall
+
+- name: create docker-compose for bor
+  template:
+    src: templates/docker-compose-bor.j2
+    dest: "{{ build_dir }}/bor/docker-compose.yml"
+  tags:
+    - docker
+    - heimdall
+
+- name: start heimdall docker-compose services
+  shell: docker-compose up -d
+  args:
+    chdir: "{{ build_dir }}/heimdall"
+  tags:
+    - compose
+    - docker
+    - heimdall
+
+# # wait for heimdall in sync with network
+# - include: test-sync.yml
+#   tags:
+#     - test
+#     - sync
+
+- include: test-insync.yml
+
+- debug: var=_result
+
+- fail:
+    msg: "heimdall needs to be in sync first"
+  when: _result.json.result.sync_info.catching_up == 'true'
+
+- name: start bor docker-compose services
+  shell: docker-compose up -d
+  args:
+    chdir: "{{ build_dir }}/bor"
+  tags:
+    - compose
+    - docker
+    - bor
