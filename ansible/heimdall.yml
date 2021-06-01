@@ -14,7 +14,7 @@
 
 - name: checkout heimdall
   git:
-    repo: {{ heimdall_clone_url }}
+    repo: "{{ heimdall_clone_url }}"
     dest: "{{ work_dir }}/heimdall"
     version: "{{ heimdall_version }}"
 
