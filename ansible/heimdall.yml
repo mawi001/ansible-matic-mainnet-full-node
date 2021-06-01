@@ -14,7 +14,7 @@
 
 - name: checkout heimdall
   git:
-    repo: https://github.com/maticnetwork/heimdall.git
+    repo: {{ heimdall_clone_url }}
     dest: "{{ work_dir }}/heimdall"
     version: "{{ heimdall_version }}"
 
@@ -31,7 +31,7 @@
     regexp: '^VOLUME*'
     line: 'VOLUME [ "/root/.heimdalld" ]'
 
-- name: build docker image
+- name: build heimdall docker image
   shell: docker build --tag heimdall:latest .
   args:
     chdir: "{{ work_dir }}/heimdall"

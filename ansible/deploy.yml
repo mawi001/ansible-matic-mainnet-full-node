@@ -6,18 +6,63 @@
   vars:
     work_dir: /data/git
     build_dir: /data/build
+    heimdall_clone_url:  https://github.com/maticnetwork/heimdall.git
     heimdall_version: v0.2.1-mainnet
     heimdall_data_dir: "/data/vol/heimdall"
     heimdall_genesis_file: https://raw.githubusercontent.com/maticnetwork/launch/master/mainnet-v1/without-sentry/heimdall/config/genesis.json
     heimdall_seeds: "f4f605d60b8ffaaf15240564e58a81103510631c@159.203.9.164:26656,4fb1bc820088764a564d4f66bba1963d47d82329@44.232.55.71:26656"
     heimdall_amqp_url: "amqp://guest:guest@rabbitmq:5672"
+    heimdall_moniker: polygon-moniker
+    heimdall_snapshots_dir: /data/build/snapshots/heimdall
+    heimdall_snapshot_url: https://matic-blockchain-snapshots.s3.amazonaws.com/matic-mainnet/heimdall-snapshot-2021-04-26.tar.gz
+    heimdall_snapshot_md5sum: 0d86cc4455b4bd0235e05b535cdb8557
+
+    bor_snapshots_dir: /data/build/snapshots/bor
+    bor_snapshot_url: https://matic-blockchain-snapshots.s3.amazonaws.com/matic-mainnet/bor-fullnode-snapshot-2021-05-20.tar.gz
+    bor_snapshot_md5sum: c9e6139a87723e21ee300e2210ed338c
+
+    bor_data_dir: /data/vol/bor
+    bor_clone_url: https://github.com/maticnetwork/bor.git
+    bor_version: v0.2.5
+    bor_genesis_file: https://raw.githubusercontent.com/maticnetwork/launch/master/mainnet-v1/without-sentry/bor/genesis.json
+
+    sync_status_url: http://localhost:26657/status
+
+    download_heimdall_snapshot: 'false'
+    download_bor_snapshot: 'false'
+    extract_heimdall_snapshot: 'false'
+    extract_bor_snapshot: 'false'
+
+    heimdall_snapshot_file: heimdall-snapshot-2021-04-26.tar.gz
+    bor_snapshot_file: bor-fullnode-snapshot-2021-05-20.tar.gz
+
   tasks:
     - include: pre.yml
       tags:
         - pre
+
     - include: docker-install.yml
       tags:
         - docker
+
     - include: heimdall.yml
       tags:
         - heimdall
+
+    - include: bor.yml
+      tags:
+        - bor
+
+    - include: download-snapshots.yml
+      tags:
+        - download
+        - snapshots
+
+    - include: extract.yml
+      tags:
+        - extract
+
+    - include: docker-compose.yml
+      tags:
+        - compose
+        - start

@@ -27,8 +27,14 @@
   apt:
     name: docker-ce
     state: latest
-    update_cache: yes 
+    update_cache: yes
 
 - name: Install Docker Module for Python
   pip:
     name: docker
+
+- name: Test docker
+  shell: docker run hello-world
+  register: hello
+
+- debug: var=hello

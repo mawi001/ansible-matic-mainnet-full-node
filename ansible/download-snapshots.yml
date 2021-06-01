@@ -1,0 +1,26 @@
+---
+- name: ensure heimdall snapshots directory
+  file:
+    path: "{{ heimdall_snapshots_dir }}"
+    state: directory
+
+- name: ensure bor snapshots directory
+  file:
+    path: "{{ bor_snapshots_dir }}"
+    state: directory
+
+- name: download heimdall snapshot
+  get_url:
+    url: "{{ heimdall_snapshot_url }}"
+    dest: "{{ heimdall_snapshots_dir }}/"
+    tmp_dest: "{{ heimdall_snapshots_dir }}/"
+    # checksum: "md5:{{ heimdall_snapshot_md5sum }}"
+  when: download_heimdall_snapshot == 'true'
+
+- name: download bor snapshot
+  get_url:
+    url: "{{ bor_snapshot_url }}"
+    dest: "{{ bor_snapshots_dir }}/"
+    tmp_dest: "{{ bor_snapshots_dir }}/"
+    # checksum: "md5:{{ bor_snapshot_md5sum }}"
+  when: download_bor_snapshot == 'true'

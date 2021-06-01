@@ -1,0 +1,47 @@
+---
+- name: create bor datadir
+  file:
+    path:
+      - "{{ bor_data_dir }}"
+      - "{{ build_dir }}"
+    state: directory
+
+- name: checkout bor
+  git:
+    repo: "{{ bor_clone_url }}"
+    dest: "{{ work_dir }}/bor"
+    version: "{{ bor_version }}"
+
+- name: build bor docker image
+  shell: docker build --tag bor:latest .
+  args:
+    chdir: "{{ work_dir }}/bor"
+  register: docker_build_bor
+
+- debug: var=docker_build_bor
+
+- name: create {{ build_dir }}/bor/
+  file:
+    path: "{{ build_dir }}/bor/"
+    state: directory
+
+- name: download genesis_file
+  get_url:
+    url: "{{ bor_genesis_file }}"
+    dest: "{{ build_dir }}/bor/genesis.json"
+
+- name: copy bor genesis config
+  copy:
+    src: "{{ build_dir }}/bor/genesis.json"
+    dest: "{{ bor_data_dir }}/genesis.json"
+    remote_src: yes
+
+- name: init bor
+  shell: >
+    docker run -it -v {{ bor_data_dir }}:/datadir
+    bor:latest
+    bor --datadir /datadir init /datadir/genesis.json
+    > bor_init
+  args:
+    chdir: "{{ build_dir }}"
+    creates: "{{ build_dir }}/bor_init"

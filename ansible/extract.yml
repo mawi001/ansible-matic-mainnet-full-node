@@ -1,0 +1,54 @@
+---
+- block:
+    - name: List heimdall snapshots
+      find:
+        paths: "{{ heimdall_snapshots_dir }}"
+      register: heimdall_snapshots
+
+    - name: Get latest heimdall snapshot file
+      set_fact:
+        heimdall_snapshot_file: "{{ heimdall_snapshots.files | sort(attribute='mtime') | last }}"
+
+    - debug: var=heimdall_snapshot_file
+  when: extract_heimdall_snapshot == 'true'
+
+- block:
+    - name: List bor snapshots
+      find:
+        paths: "{{ bor_snapshots_dir }}"
+      register: bor_snapshots
+
+    - name: Get latest bor snapshot file
+      set_fact:
+        bor_snapshot_file: "{{ bor_snapshots.files | sort(attribute='mtime') | last }}"
+
+    - debug: var=bor_snapshot_file
+  when: extract_bor_snapshot == 'true'
+
+- name: stop heimdall docker-compose services
+  shell: docker-compose down
+  args:
+    chdir: "{{ build_dir }}/heimdall"
+  tags:
+    - compose
+    - docker
+    - heimdall
+  when: extract_heimdall_snapshot == 'true'
+
+- name: stop bor docker-compose services
+  shell: docker-compose down
+  args:
+    chdir: "{{ build_dir }}/bor"
+  tags:
+    - compose
+    - docker
+    - bor
+  when: extract_bor_snapshot == 'true'
+
+- name: extract heimdall snapshot
+  shell: tar -xzvf {{ heimdall_snapshot_file.path }} -C {{ heimdall_data_dir}}/data
+  when: extract_heimdall_snapshot == 'true'
+
+- name: extract bor snapshot
+  shell: tar -xzvf {{ bor_snapshot_file.path }} -C {{ bor_data_dir }}/bor/chaindata
+  when: extract_bor_snapshot == 'true'

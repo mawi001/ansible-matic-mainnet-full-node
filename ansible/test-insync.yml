@@ -1,0 +1,8 @@
+---
+- name: test if in sync with mainnet
+  uri:
+    url: "{{ sync_status_url }}"
+    follow_redirects: none
+    method: GET
+    return_content: yes
+  register: _result
